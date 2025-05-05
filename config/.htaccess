@@ -1,0 +1,26 @@
+# Prevent direct access to the config directory
+# This helps protect sensitive information like SMTP credentials
+
+# Deny access to all files
+<FilesMatch ".*">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Block viewing of this .htaccess file
+<Files .htaccess>
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Disable directory browsing
+Options -Indexes
+
+# Disable PHP execution in this directory
+<FilesMatch "\.php$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Return a 403 Forbidden error
+RedirectMatch 403 ^/config/?$ 

@@ -230,3 +230,171 @@ See [changelog](changelog.md).
 - Additional languages and language strings.
 - CRAM-MD5 authentication support.
 - Preserves full repo history of authors, commits, and branches from the original SourceForge project.
+
+# PHPMailer UI
+
+A user-friendly web interface for configuring, testing, and managing PHPMailer in your PHP applications.
+
+## Features
+
+- **Easy Configuration**: Set up your SMTP settings through a simple web form
+- **Connection Testing**: Test your SMTP connection without sending emails
+- **Email Testing**: Send test emails to verify your configuration
+- **Detailed Logs**: View detailed SMTP logs for troubleshooting
+- **Configuration Editor**: Edit your PHPMailer settings at any time
+- **Comprehensive Documentation**: Access helpful guides and reference material
+- **Modern UI**: Clean, responsive interface built with Bootstrap 5
+- **Popular Providers**: Pre-configured settings for Gmail, Yahoo, Outlook, and more
+- **Secure**: Password protection for sensitive information
+
+## Requirements
+
+- PHP 5.5 or later (PHP 7+ recommended)
+- PHPMailer library installed via Composer
+- Web server with PHP support (Apache, Nginx, etc.)
+- Write permissions on the `config` directory
+
+## Installation
+
+1. Install PHPMailer via Composer:
+   ```bash
+   composer require phpmailer/phpmailer
+   ```
+
+2. Clone or download this repository into your project directory.
+
+3. Make sure the `config` directory is writable by your web server:
+   ```bash
+   mkdir config
+   chmod 755 config
+   ```
+
+4. Access the setup page in your web browser:
+   ```
+   http://your-server/path-to-installation/setup.php
+   ```
+
+5. Follow the on-screen instructions to configure your email settings.
+
+## Usage
+
+### Basic Usage
+
+1. Navigate to the main page:
+   ```
+   http://your-server/path-to-installation/index.php
+   ```
+
+2. View your current configuration, test your SMTP connection, or send test emails.
+
+### Configuration
+
+You can update your email settings at any time by clicking the "Edit Configuration" button or visiting:
+```
+http://your-server/path-to-installation/config-editor.php
+```
+
+### Documentation
+
+Access the comprehensive documentation by clicking the "Documentation" link in the navigation bar or visiting:
+```
+http://your-server/path-to-installation/docs.php
+```
+
+## Integration with Your Application
+
+To use PHPMailer in your application with the configured settings:
+
+```php
+<?php
+// Include the PHPMailer autoloader
+require 'vendor/autoload.php';
+
+// Include your configuration
+require 'config/config.php';
+
+// Import PHPMailer classes
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Create a new PHPMailer instance
+$mail = new PHPMailer(true);
+
+try {
+    // Configure using your settings
+    $mail->isSMTP();
+    $mail->Host = $CONFIG['smtp_host'];
+    $mail->Port = $CONFIG['smtp_port'];
+    
+    // Set encryption type
+    if ($CONFIG['smtp_secure'] === 'ssl') {
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    } elseif ($CONFIG['smtp_secure'] === 'tls') {
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+    }
+    
+    // Authentication
+    $mail->SMTPAuth = !empty($CONFIG['smtp_username']) && !empty($CONFIG['smtp_password']);
+    if ($mail->SMTPAuth) {
+        $mail->Username = $CONFIG['smtp_username'];
+        $mail->Password = $CONFIG['smtp_password'];
+    }
+    
+    // Set default sender
+    $mail->setFrom($CONFIG['from_email'], $CONFIG['from_name']);
+    
+    // Add recipients, content, etc.
+    $mail->addAddress('recipient@example.com');
+    $mail->Subject = 'Email Subject';
+    $mail->Body = 'Email body content';
+    
+    // Send the email
+    $mail->send();
+    echo 'Message sent successfully';
+} catch (Exception $e) {
+    echo "Message could not be sent. Error: {$mail->ErrorInfo}";
+}
+```
+
+## Configuration File
+
+The configuration is stored in `config/config.php` and contains the following settings:
+
+- `smtp_host`: Your SMTP server hostname
+- `smtp_port`: The port to connect to
+- `smtp_secure`: Encryption type (empty for none, 'ssl', or 'tls')
+- `smtp_username`: Authentication username
+- `smtp_password`: Authentication password
+- `from_email`: Default sender email address
+- `from_name`: Default sender name
+
+## Security Considerations
+
+- Ensure that your `config` directory cannot be accessed directly via the web
+- Consider adding additional authentication to protect the PHPMailer UI in production
+- Always use secure connections (SSL/TLS) when sending emails with sensitive information
+- Be cautious with email credentials - use app passwords when available
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. Check the connection test logs for specific error messages
+2. Verify your SMTP credentials and server settings
+3. Ensure your server allows outgoing connections on the specified port
+4. Check if your email provider requires special settings (like app passwords)
+5. Refer to the documentation page for common issues and solutions
+
+## Contributing
+
+Contributions are welcome! Feel free to submit issues or pull requests.
+
+## License
+
+This project is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Credits
+
+- [PHPMailer](https://github.com/PHPMailer/PHPMailer) - The awesome email library
+- [Bootstrap](https://getbootstrap.com/) - For the responsive UI
+- [Bootstrap Icons](https://icons.getbootstrap.com/) - For the beautiful icons
